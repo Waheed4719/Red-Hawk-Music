@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal"
+    android:background="@android:color/holo_red_dark"
+    >
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:background="@drawable/dua_lipa"
+        android:layout_marginLeft="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Song Name"
+            android:textSize="18dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/audiowide"
+            android:singleLine="true"
+            android:id="@+id/song_title"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/album_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Album name"
+            android:textSize="14dp"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/audiowide"
+            android:alpha="06"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/darker_gray"
+        android:id="@+id/test"
+        />
+
+
+</LinearLayout>
