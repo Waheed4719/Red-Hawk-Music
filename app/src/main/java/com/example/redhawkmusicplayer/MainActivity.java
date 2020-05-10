@@ -37,6 +37,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout bottomsheet,drawerpull;
     private ListView listView;
     private String[] Music;
-    private TextView songtitle,songtitlemini;
+    private TextView songtitle,songtitlemini,cur_time,full_time;
     private ImageView play_btn,prev_btn,next_btn,play_btn_mini,prev_btn_mini,next_btn_mini;
     private Boolean bool;
     private SeekBar seekBar;
@@ -68,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
         prev_btn_mini = findViewById(R.id.prev_btn_mini);
         next_btn = findViewById(R.id.next_btn);
         next_btn_mini = findViewById(R.id.next_btn_mini);
+        cur_time = findViewById(R.id.cur_time);
+        full_time = findViewById(R.id.full_time);
+
+
 
 
         songtitle = findViewById(R.id.song_name);
@@ -142,8 +147,11 @@ public class MainActivity extends AppCompatActivity {
                     sleep(500);
                     currentPosition = myMediaPlayer.getCurrentPosition();
                     seekBar.setProgress(currentPosition);
+                    Log.i("position",""+currentPosition);
+                    cur_time.setText(Integer.toString(myMediaPlayer.getCurrentPosition()/1000));
                 }
                 catch(InterruptedException e){
+                    Log.i("error","updateSeekBar issue");
                     e.printStackTrace();
                 }
             }
@@ -157,11 +165,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
 
-
-
-
     }
-
   public ArrayList<File> findSong(File file){
         ArrayList<File> arrayList = new ArrayList<>();
 
@@ -189,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
         final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
 
+
         Music = new String[mySongs.size()];
        final ArrayList<ItemHelper> list = new ArrayList<>();
         for(int i = 0; i< mySongs.size(); i++){
@@ -213,7 +218,11 @@ public class MainActivity extends AppCompatActivity {
               if(myMediaPlayer!=null){
                   myMediaPlayer.stop();
                   myMediaPlayer.release();
+
               }
+              seekBar.setProgress(0);
+              cur_time.setText("0");
+
               myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
               myMediaPlayer.start();
               songtitle.setText(mySongs.get(position).getName());
@@ -224,31 +233,31 @@ public class MainActivity extends AppCompatActivity {
 
 
               seekBar.setMax(myMediaPlayer.getDuration());
-              if(updateSeekBar.isAlive()){
-                  Log.i("interrupt"," interupted");
-                  updateSeekBar.interrupt();
-              }
+              seekBar.setProgress(myMediaPlayer.getCurrentPosition());
+              full_time.setText(Integer.toString(myMediaPlayer.getDuration()/1000));
+
 
               if(updateSeekBar.getState() == Thread.State.NEW){
+                  Log.i("created"," created");
                   updateSeekBar.start();
               }
 
+              myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                  @Override
+                  public void onCompletion(MediaPlayer mp) {
+                      seekBar.setProgress(0);
+                      mp.seekTo(0);
+                      Log.i("message","seeked to 0");
+                      cur_time.setText("0");
 
+                      play_btn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                      play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                  }
+              });
 
               seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                   @Override
                   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-                    if(progress == myMediaPlayer.getDuration()){
-                        seekBar.setProgress(0);
-                        myMediaPlayer.seekTo(seekBar.getProgress());
-                        myMediaPlayer.pause();
-
-                        play_btn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
-                        play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
-
-                    }
-
                   }
 
                   @Override
@@ -269,13 +278,25 @@ public class MainActivity extends AppCompatActivity {
               play_btn.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(View v) {
-                      seekBar.setMax(myMediaPlayer.getDuration());
+//                      seekBar.setMax(myMediaPlayer.getDuration());
                         if(myMediaPlayer.isPlaying()){
                             play_btn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
                             play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
                             myMediaPlayer.pause();
                         }
-
+                        else if(seekBar.getProgress() == 0){
+                            Log.i("play_btn", "got In");
+                            play_btn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+                            play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+                            myMediaPlayer.start();
+                            if(updateSeekBar.getState() == Thread.State.NEW){
+                                Log.i("created2", "got In");
+                                updateSeekBar.start();
+                            }
+                            else if(updateSeekBar.isAlive()){
+                                Log.i("alive", "Still alive");
+                            }
+                        }
                         else{
                             play_btn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
                             play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
@@ -302,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
                       Uri u = Uri.parse(mySongs.get(pos).toString());
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
+                      seekBar.setMax(myMediaPlayer.getDuration());
                       songtitle.setText(mySongs.get(pos).getName().toString());
                       songtitlemini.setText(mySongs.get(pos).getName());
                   }
@@ -325,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
                       Uri u = Uri.parse(mySongs.get(pos).toString());
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
+                      seekBar.setMax(myMediaPlayer.getDuration());
                       songtitle.setText(mySongs.get(pos).getName().toString());
                       songtitlemini.setText(mySongs.get(pos).getName());
                   }

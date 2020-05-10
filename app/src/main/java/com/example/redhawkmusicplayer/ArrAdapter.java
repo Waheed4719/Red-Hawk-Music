@@ -1,6 +1,8 @@
 package com.example.redhawkmusicplayer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClick
         mResource = resource;
     }
 
+   @SuppressLint("WrongConstant")
    public View getView(int position, View convertView, ViewGroup parent){
         String song_title = getItem(position).getSong_title();
 
@@ -36,11 +39,15 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClick
        TextView song = (TextView) convertView.findViewById(R.id.song_title);
        ImageView image = (ImageView) convertView.findViewById(R.id.test);
 
+
        image.setOnClickListener(this);
        image.setTag(position);
 
        song.setText(song_title);
 
+       Typeface face = Typeface.defaultFromStyle(R.font.audiowide);
+
+       song.setTypeface(face);
 
        return convertView;
 

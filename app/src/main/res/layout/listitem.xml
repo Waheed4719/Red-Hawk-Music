@@ -3,14 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="80dp"
     android:orientation="horizontal"
-    android:background="@android:color/holo_red_dark"
+    android:background="#2E4672"
     >
 
     <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
-        android:background="@drawable/dua_lipa"
+        android:background="@drawable/red"
+        android:scaleType="centerCrop"
         android:layout_marginLeft="10dp"
         />
 
@@ -46,6 +47,7 @@
     </LinearLayout>
 
     <ImageView
+        android:visibility="gone"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@android:color/darker_gray"
