@@ -52,14 +52,14 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClick
        Toast.makeText(mContext,""+position,Toast.LENGTH_SHORT).show();
        Object object= getItem(position);
        ItemHelper dataModel=(ItemHelper) object;
-    Snackbar.make(v,"hello",Snackbar.LENGTH_SHORT).setAction("No Action",null).show();
-       switch (v.getId())
-       {
+        Snackbar.make(v,"hello",Snackbar.LENGTH_SHORT).setAction("No Action",null).show();
+           switch (v.getId())
+           {
 
-           case R.id.test:
-               Snackbar.make(v, "Release date ", Snackbar.LENGTH_LONG)
-                       .setAction("No action", null).show();
-               break;
-       }
+               case R.id.test:
+                   Snackbar.make(v, "Release date ", Snackbar.LENGTH_LONG)
+                           .setAction("No action", null).show();
+                   break;
+           }
    }
 }

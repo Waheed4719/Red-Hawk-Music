@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -45,11 +46,12 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout bottomsheet,drawerpull;
     private ListView listView;
     private String[] Music;
-    private TextView songtitle;
-    private ImageView play_btn;
+    private TextView songtitle,songtitlemini;
+    private ImageView play_btn,prev_btn,next_btn,play_btn_mini,prev_btn_mini,next_btn_mini;
     private Boolean bool;
     private SeekBar seekBar;
     static MediaPlayer myMediaPlayer;
+    int pos;
     Thread updateSeekBar;
 
 
@@ -61,7 +63,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         play_btn = findViewById(R.id.play_btn);
-        songtitle = findViewById(R.id.song_title);
+        play_btn_mini = findViewById(R.id.play_btn_mini);
+        prev_btn = findViewById(R.id.prev_btn);
+        prev_btn_mini = findViewById(R.id.prev_btn_mini);
+        next_btn = findViewById(R.id.next_btn);
+        next_btn_mini = findViewById(R.id.next_btn_mini);
+
+
+        songtitle = findViewById(R.id.song_name);
+        songtitlemini = findViewById(R.id.song_title);
+
         listView = findViewById(R.id.lv);
         drawerpull = findViewById(R.id.drawerpull);
         seekBar = findViewById(R.id.seekbar);
@@ -81,34 +92,19 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet);
 
         prepareBottomSheet(bottomSheetBehavior);
-        drawerpull.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED){
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-                else{
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-            }
-        });
+//        drawerpull.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED){
+//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                }
+//                else{
+//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                }
+//            }
+//        });
 
 
-        bool = false;
-        play_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(bool == false){
-                    play_btn.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_stop_black_24dp));
-                    bool = true;
-                }
-                else{
-                    play_btn.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_play_arrow_black_24dp));
-                    bool = false;
-                }
-
-            }
-        });
 
 
 
@@ -151,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+
         }
       };
 
@@ -188,9 +185,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
   void display(){
 
         final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
@@ -205,19 +199,145 @@ public class MainActivity extends AppCompatActivity {
         }
 
       ArrAdapter adapter = new ArrAdapter(getApplicationContext(),R.layout.listitem,list);
-//        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_list_item_1,Music);
 
       listView.setAdapter(adapter);
 
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           @Override
-          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+          public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+              pos = position;
               ItemHelper lists = list.get(position);
-//              Toast.makeText(getApplicationContext(),""+lists.getSong_title() ,Toast.LENGTH_SHORT).show();
 
-              Snackbar.make(view, lists.getSong_title(), Snackbar.LENGTH_LONG)
-                      .setAction("No action", null).show();
-              songtitle.setText(parent.getItemAtPosition(position).toString());
+              Uri u = Uri.parse(mySongs.get(position).toString());
+
+              if(myMediaPlayer!=null){
+                  myMediaPlayer.stop();
+                  myMediaPlayer.release();
+              }
+              myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
+              myMediaPlayer.start();
+              songtitle.setText(mySongs.get(position).getName());
+              songtitlemini.setText(mySongs.get(position).getName());
+
+              play_btn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+              play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+
+
+              seekBar.setMax(myMediaPlayer.getDuration());
+              if(updateSeekBar.isAlive()){
+                  Log.i("interrupt"," interupted");
+                  updateSeekBar.interrupt();
+              }
+
+              if(updateSeekBar.getState() == Thread.State.NEW){
+                  updateSeekBar.start();
+              }
+
+
+
+              seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                  @Override
+                  public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                    if(progress == myMediaPlayer.getDuration()){
+                        seekBar.setProgress(0);
+                        myMediaPlayer.seekTo(seekBar.getProgress());
+                        myMediaPlayer.pause();
+
+                        play_btn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                        play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+
+                    }
+
+                  }
+
+                  @Override
+                  public void onStartTrackingTouch(SeekBar seekBar) {
+
+                  }
+
+                  @Override
+                  public void onStopTrackingTouch(SeekBar seekBar) {
+                        myMediaPlayer.seekTo(seekBar.getProgress());
+                  }
+              });
+
+
+
+
+
+              play_btn.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      seekBar.setMax(myMediaPlayer.getDuration());
+                        if(myMediaPlayer.isPlaying()){
+                            play_btn.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                            play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                            myMediaPlayer.pause();
+                        }
+
+                        else{
+                            play_btn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+                            play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+                            myMediaPlayer.start();
+                        }
+                  }
+              });
+
+
+              play_btn_mini.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      play_btn.performClick();
+                  }
+              });
+              next_btn.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      myMediaPlayer.stop();
+                      myMediaPlayer.release();
+
+                      Toast.makeText(getApplicationContext(),""+ pos, Toast.LENGTH_SHORT).show();
+                      pos = ((pos+1) % mySongs.size());
+                      Uri u = Uri.parse(mySongs.get(pos).toString());
+                      myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
+                      myMediaPlayer.start();
+                      songtitle.setText(mySongs.get(pos).getName().toString());
+                      songtitlemini.setText(mySongs.get(pos).getName());
+                  }
+              });
+              next_btn_mini.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      next_btn.performClick();
+                  }
+              });
+
+              prev_btn.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      myMediaPlayer.stop();
+                      myMediaPlayer.release();
+
+                      if(pos!=0){ pos = (Math.abs(pos-1)%mySongs.size()); }
+                      else{ pos = mySongs.size() - 1; }
+
+                      Uri u = Uri.parse(mySongs.get(pos).toString());
+                      myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
+                      myMediaPlayer.start();
+                      songtitle.setText(mySongs.get(pos).getName().toString());
+                      songtitlemini.setText(mySongs.get(pos).getName());
+                  }
+              });
+                prev_btn_mini.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        prev_btn.performClick();
+                    }
+                });
+
+
+
           }
       });
 
