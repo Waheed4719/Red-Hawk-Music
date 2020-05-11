@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,11 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         songtitle = findViewById(R.id.song_name);
+        songtitle.setSelected(true);
         songtitlemini = findViewById(R.id.song_title);
+        songtitlemini.setSelected(true);
 
         listView = findViewById(R.id.lv);
         drawerpull = findViewById(R.id.drawerpull);
         seekBar = findViewById(R.id.seekbar);
+        seekBar.getProgressDrawable().setColorFilter(getResources().getColor(android.R.color.holo_blue_light), PorterDuff.Mode.MULTIPLY);
+        seekBar.getThumb().setColorFilter(getResources().getColor(android.R.color.holo_blue_light),PorterDuff.Mode.SRC_IN);
 
 
         decorView = getWindow().getDecorView();
@@ -98,21 +103,6 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet);
 
         prepareBottomSheet(bottomSheetBehavior);
-//        drawerpull.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED){
-//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-//                }
-//                else{
-//                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                }
-//            }
-//        });
-
-
-
-
 
 
       Dexter.withActivity(this)
@@ -232,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
               songtitle.setText(mySongs.get(position).getName());
               songtitlemini.setText(mySongs.get(position).getName());
-              play_btn.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+              play_btn.setBackgroundResource(R.mipmap.ic_pause);
               play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
               int Duration = myMediaPlayer.getDuration()/1000;
               seekBar.setProgress(myMediaPlayer.getCurrentPosition());
@@ -247,9 +237,9 @@ public class MainActivity extends AppCompatActivity {
                       if(myMediaPlayer.isPlaying()){
                           Log.i("paused", "here");
                           myMediaPlayer.pause();
-                          cur_time.setText("0:00");
-                          play_btn.setBackgroundResource(R.mipmap.ic_play);
-                          play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+//                          cur_time.setText("0:00");
+//                          play_btn.setBackgroundResource(R.mipmap.ic_play);
+//                          play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
                       }
                       cur_time.setText("0:00");
                       play_btn.setBackgroundResource(R.mipmap.ic_play);
@@ -258,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                   }
               });
 
-              //Updates seekbar while music plays
+              //Updates Seekbar while music plays
                 updateSeekBar();
 
               seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

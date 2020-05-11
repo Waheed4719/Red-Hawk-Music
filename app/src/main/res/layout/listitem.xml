@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="60dp"
     android:orientation="horizontal"
-    android:background="#2E4672"
+    android:background="@color/snow"
     >
 
     <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:background="@drawable/red"
         android:scaleType="centerCrop"
@@ -26,33 +26,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Song Name"
-            android:textSize="18dp"
+            android:textSize="16dp"
             android:ellipsize="end"
             android:fontFamily="@font/audiowide"
             android:singleLine="true"
             android:id="@+id/song_title"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:id="@+id/album_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Album name"
-            android:textSize="14dp"
-            android:textColor="@android:color/white"
+            android:textSize="12dp"
+            android:textColor="@android:color/background_dark"
             android:fontFamily="@font/audiowide"
-            android:alpha="06"
+            android:alpha="0.6"
             />
 
     </LinearLayout>
 
-    <ImageView
-        android:visibility="gone"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@android:color/darker_gray"
-        android:id="@+id/test"
-        />
+<ImageView
+    android:layout_width="30dp"
+    android:layout_height="35dp"
+    android:layout_gravity="center"
+    android:layout_marginLeft="110dp"
+    android:background="@drawable/dropdown"
+    />
+
+
 
 
 </LinearLayout>

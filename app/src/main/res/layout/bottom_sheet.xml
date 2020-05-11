@@ -20,20 +20,27 @@
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="#233048"
+        android:background="@color/snow"
         android:padding="5dp"
         android:elevation="8dp"
         >
 
 
 
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_height="50dp"
             android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/dua_lipa"
+            android:scaleType="fitCenter"
             android:layout_gravity="center"
+            app:riv_corner_radius="30dip"
+            app:riv_corner_radius_bottom_left="150dp"
+            app:riv_corner_radius_bottom_right="150dp"
+            app:riv_corner_radius_top_left="150dp"
+            app:riv_corner_radius_top_right="150dp"
             android:layout_marginRight="15dp"
             android:layout_marginLeft="5dp"
+            android:src="@drawable/red"
+            app:riv_mutate_background="true"
             />
 
         <LinearLayout
@@ -51,9 +58,11 @@
                 android:fontFamily="@font/audiowide"
                 android:id="@+id/song_title"
                 android:text="Don't Start Now"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:ellipsize="marquee"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
                 android:textSize="16dp" />
 
             <TextView
@@ -62,14 +71,14 @@
                 android:alpha="0.6"
                 android:fontFamily="@font/audiowide"
                 android:text="Dua Lipa"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/background_dark" />
 
         </LinearLayout>
 
         <ImageView
             android:id="@+id/prev_btn_mini"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="4dp"
@@ -87,8 +96,8 @@
 
         <ImageView
             android:id="@+id/next_btn_mini"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="4dp"
             android:elevation="9dp"
@@ -97,17 +106,20 @@
     </LinearLayout>
 
 
-    <ImageView
-
-        android:layout_gravity="center"
-        android:layout_width="250dp"
+    <com.makeramen.roundedimageview.RoundedImageView
         android:layout_height="250dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/red"
-        android:elevation="18dp"
+        android:layout_width="250dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        app:riv_corner_radius="30dip"
+        app:riv_corner_radius_bottom_left="150dp"
+        app:riv_corner_radius_bottom_right="150dp"
+        app:riv_corner_radius_top_left="150dp"
+        app:riv_corner_radius_top_right="150dp"
+        android:src="@drawable/red"
+        app:riv_mutate_background="true"
         />
-
     <TextView
         android:id="@+id/song_name"
         android:layout_width="match_parent"
@@ -119,8 +131,9 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:ellipsize="marquee"
         android:singleLine="true"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="10dp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="40dp"
+        android:scrollHorizontally="true"
         />
 
     <TextView
@@ -130,8 +143,10 @@
         android:textAlignment="center"
         android:textSize="16sp"
         android:fontFamily="@font/audiowide"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/background_dark"
         android:alpha="0.6"
+        android:layout_marginBottom="20dp"
+
         />
 
     <LinearLayout
@@ -141,15 +156,17 @@
         android:orientation="horizontal"
         android:gravity="center"
         >
+
         <TextView
             android:id="@+id/cur_time"
-            android:text="00:00"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:textSize="16dp"
             android:layout_width="60dp"
+            android:layout_height="35dp"
             android:layout_marginRight="50dp"
-            android:layout_height="35dp"/>
+            android:fontFamily="@font/convergence"
+            android:gravity="center"
+            android:text="00:00"
+            android:textColor="@android:color/tertiary_text_dark"
+            android:textSize="16dp" />
         <ImageView
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -165,7 +182,8 @@
         <TextView
             android:id="@+id/full_time"
             android:text="02:00"
-            android:textColor="@android:color/white"
+            android:fontFamily="@font/convergence"
+            android:textColor="@android:color/tertiary_text_dark"
             android:gravity="center"
             android:textSize="16dp"
             android:layout_width="60dp"
@@ -194,8 +212,8 @@
 
         <ImageView
             android:id="@+id/prev_btn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
             android:elevation="8dp"
@@ -203,17 +221,17 @@
 
         <ImageView
             android:id="@+id/play_btn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:elevation="8dp"
+            android:elevation="12dp"
             android:background="@mipmap/ic_play"/>
 
         <ImageView
             android:id="@+id/next_btn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
             android:elevation="8dp"

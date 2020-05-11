@@ -17,7 +17,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClickListener{
+public class ArrAdapter extends ArrayAdapter<ItemHelper>{
 
     ArrayList<ItemHelper> song;
     private Context mContext;
@@ -37,11 +37,11 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClick
        convertView = inflater.inflate(mResource,parent,false);
 
        TextView song = (TextView) convertView.findViewById(R.id.song_title);
-       ImageView image = (ImageView) convertView.findViewById(R.id.test);
+//       ImageView image = (ImageView) convertView.findViewById(R.id.test);
 
 
-       image.setOnClickListener(this);
-       image.setTag(position);
+//       image.setOnClickListener(this);
+//       image.setTag(position);
 
        song.setText(song_title);
 
@@ -52,21 +52,21 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper> implements View.OnClick
        return convertView;
 
    }
-   @Override
-   public void onClick(View v){
-       Toast.makeText(mContext,"Hi",Toast.LENGTH_SHORT).show();
-       int position=(Integer) v.getTag();
-       Toast.makeText(mContext,""+position,Toast.LENGTH_SHORT).show();
-       Object object= getItem(position);
-       ItemHelper dataModel=(ItemHelper) object;
-        Snackbar.make(v,"hello",Snackbar.LENGTH_SHORT).setAction("No Action",null).show();
-           switch (v.getId())
-           {
-
-               case R.id.test:
-                   Snackbar.make(v, "Release date ", Snackbar.LENGTH_LONG)
-                           .setAction("No action", null).show();
-                   break;
-           }
-   }
+//   @Override
+//   public void onClick(View v){
+//       Toast.makeText(mContext,"Hi",Toast.LENGTH_SHORT).show();
+//       int position=(Integer) v.getTag();
+//       Toast.makeText(mContext,""+position,Toast.LENGTH_SHORT).show();
+//       Object object= getItem(position);
+//       ItemHelper dataModel=(ItemHelper) object;
+//        Snackbar.make(v,"hello",Snackbar.LENGTH_SHORT).setAction("No Action",null).show();
+//           switch (v.getId())
+//           {
+//
+//               case R.id.test:
+//                   Snackbar.make(v, "Release date ", Snackbar.LENGTH_LONG)
+//                           .setAction("No action", null).show();
+//                   break;
+//           }
+//   }
 }
