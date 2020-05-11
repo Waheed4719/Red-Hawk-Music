@@ -146,8 +146,8 @@
             android:text="00:00"
             android:textColor="@android:color/white"
             android:gravity="center"
-            android:textSize="18dp"
-            android:layout_width="50dp"
+            android:textSize="16dp"
+            android:layout_width="60dp"
             android:layout_marginRight="50dp"
             android:layout_height="35dp"/>
         <ImageView
@@ -167,8 +167,8 @@
             android:text="02:00"
             android:textColor="@android:color/white"
             android:gravity="center"
-            android:textSize="18dp"
-            android:layout_width="50dp"
+            android:textSize="16dp"
+            android:layout_width="60dp"
             android:layout_height="35dp"
             android:layout_marginLeft="50dp"/>
     </LinearLayout>
@@ -208,7 +208,7 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
             android:elevation="8dp"
-            android:background="@drawable/ic_play_arrow_black_24dp"/>
+            android:background="@mipmap/ic_play"/>
 
         <ImageView
             android:id="@+id/next_btn"
