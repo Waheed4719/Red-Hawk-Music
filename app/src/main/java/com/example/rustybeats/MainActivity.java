@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.rustybeats.CircularSeekBar;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.karumi.dexter.Dexter;
@@ -40,7 +41,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-
+import com.example.rustybeats.CircularSeekBar.OnCircularSeekBarChangeListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView play_btn,prev_btn,next_btn,play_btn_mini,prev_btn_mini,next_btn_mini,album_art,mini_album_art;
     private Boolean bool;
     private SeekBar seekBar;
+    private CircularSeekBar seekBar2;
     static MediaPlayer myMediaPlayer;
     int pos;
     private Runnable runnable;
@@ -97,8 +99,7 @@ public class MainActivity extends AppCompatActivity {
         drawerpull = findViewById(R.id.drawerpull);
         nowPlaying = findViewById(R.id.NowPlaying);
         seekBar = findViewById(R.id.seekbar);
-//        seekBar.getProgressDrawable().setColorFilter(getResources().getColor(android.R.color.holo_blue_light), PorterDuff.Mode.MULTIPLY);
-//        seekBar.getThumb().setColorFilter(getResources().getColor(android.R.color.holo_blue_light),PorterDuff.Mode.SRC_IN);
+        seekBar2 = findViewById(R.id.circularSeekBar1);
 
 
         decorView = getWindow().getDecorView();
@@ -177,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateSeekBar(){
         seekBar.setProgress((myMediaPlayer.getCurrentPosition()));
+        seekBar2.setProgress((myMediaPlayer.getCurrentPosition()));
 
         Long time = Long.valueOf(myMediaPlayer.getCurrentPosition());
         long seconds = time/1000;
@@ -272,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
                   myMediaPlayer.release();
               }
               seekBar.setProgress(0);
+              seekBar2.setProgress(0);
               cur_time.setText("0:00");
 
               myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
@@ -292,6 +295,8 @@ public class MainActivity extends AppCompatActivity {
               play_btn_mini.setBackgroundResource(R.drawable.pause_circle);
               int Duration = myMediaPlayer.getDuration()/1000;
               seekBar.setProgress(myMediaPlayer.getCurrentPosition());
+              seekBar2.setProgress(myMediaPlayer.getCurrentPosition());
+              seekBar2.setMax(myMediaPlayer.getDuration());
               seekBar.setMax(myMediaPlayer.getDuration());
               full_time.setText(Duration / 60 + ":" + Duration % 60);
 
@@ -299,6 +304,7 @@ public class MainActivity extends AppCompatActivity {
                   @Override
                   public void onCompletion(MediaPlayer mp) {
                       seekBar.setProgress(0);
+                      seekBar2.setProgress(0);
                       mp.seekTo(seekBar.getProgress());
                       if(myMediaPlayer.isPlaying()){
                           Log.i("paused", "here");
@@ -335,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
               });
 
 
-
+              seekBar2.setOnSeekBarChangeListener(new CircleSeekBarListener(myMediaPlayer));
 
 
               play_btn.setOnClickListener(new View.OnClickListener() {
@@ -383,6 +389,7 @@ public class MainActivity extends AppCompatActivity {
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
                       seekBar.setMax(myMediaPlayer.getDuration());
+                      seekBar2.setMax(myMediaPlayer.getDuration());
                       songtitle.setText(mySongs.get(pos).getName().toString());
                       songtitlemini.setText(mySongs.get(pos).getName());
                   }
@@ -415,6 +422,7 @@ public class MainActivity extends AppCompatActivity {
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
                       seekBar.setMax(myMediaPlayer.getDuration());
+                      seekBar2.setMax(myMediaPlayer.getDuration());
                       songtitle.setText(mySongs.get(pos).getName().toString());
                       songtitlemini.setText(mySongs.get(pos).getName());
                   }

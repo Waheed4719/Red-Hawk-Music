@@ -34,4 +34,5 @@ dependencies {
     implementation 'com.android.support:design:29.0.0'
     implementation 'com.karumi:dexter:6.1.0'
     implementation 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.github.4inodev:Neomorphic-FrameLayout-Android:1.03'
 }
