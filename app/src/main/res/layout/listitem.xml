@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="60dp"
     android:orientation="horizontal"
-    android:background="@color/snow"
+    android:background="#36363E"
     >
 
-    <ImageView
-        android:layout_width="50dp"
+<!--    <ImageView-->
+<!--        android:layout_width="50dp"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:background="@drawable/red"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:layout_marginLeft="10dp"-->
+<!--        />-->
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/coverArt"
         android:layout_height="50dp"
+        android:layout_width="50dp"
+        android:scaleType="fitCenter"
         android:layout_gravity="center"
-        android:background="@drawable/red"
-        android:scaleType="centerCrop"
-        android:layout_marginLeft="10dp"
+        app:riv_corner_radius="10dip"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:src="@drawable/red"
+        app:riv_mutate_background="true"
         />
 
     <LinearLayout
@@ -23,26 +38,25 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/song_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Song Name"
-            android:textSize="16dp"
             android:ellipsize="end"
-            android:fontFamily="@font/audiowide"
             android:singleLine="true"
-            android:id="@+id/song_title"
-            android:textColor="@android:color/black"/>
+            android:text="Song Name"
+            android:textColor="@android:color/white"
+
+            android:textSize="16dp" />
 
         <TextView
             android:id="@+id/album_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Album name"
-            android:textSize="12dp"
-            android:textColor="@android:color/background_dark"
-            android:fontFamily="@font/audiowide"
             android:alpha="0.6"
-            />
+            android:fontFamily="@font/poppins_medium"
+            android:text="Album name"
+            android:textColor="@android:color/background_light"
+            android:textSize="12dp" />
 
     </LinearLayout>
 
@@ -50,8 +64,9 @@
     android:layout_width="30dp"
     android:layout_height="35dp"
     android:layout_gravity="center"
-    android:layout_marginLeft="110dp"
+    android:layout_marginLeft="90dp"
     android:background="@drawable/dropdown"
+    android:alpha="0.7"
     />
 
 

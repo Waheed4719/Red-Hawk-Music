@@ -1,13 +1,20 @@
-package com.example.redhawkmusicplayer;
+package com.example.rustybeats;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,52 +25,51 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.snackbar.Snackbar;
 import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
     private LinearLayout bottomsheet,drawerpull;
+    private ConstraintLayout nowPlaying;
     private ListView listView;
     private String[] Music;
     private TextView songtitle,songtitlemini,cur_time,full_time;
-    private ImageView play_btn,prev_btn,next_btn,play_btn_mini,prev_btn_mini,next_btn_mini;
+    private ImageView play_btn,prev_btn,next_btn,play_btn_mini,prev_btn_mini,next_btn_mini,album_art,mini_album_art;
     private Boolean bool;
     private SeekBar seekBar;
     static MediaPlayer myMediaPlayer;
     int pos;
-//    Thread updateSeekBar;
     private Runnable runnable;
     private Handler handler;
     GlobalFunctions uiBars = new GlobalFunctions();
     private View decorView;
+    RecyclerView recyclerView;
+    RecyclerAdapter adapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         play_btn = findViewById(R.id.play_btn);
         play_btn_mini = findViewById(R.id.play_btn_mini);
@@ -73,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
         next_btn_mini = findViewById(R.id.next_btn_mini);
         cur_time = findViewById(R.id.cur_time);
         full_time = findViewById(R.id.full_time);
+        recyclerView = findViewById(R.id.music_groups);
+
+        recyclerViewFunc();
+
 
         handler = new Handler();
 
@@ -81,12 +91,14 @@ public class MainActivity extends AppCompatActivity {
         songtitle.setSelected(true);
         songtitlemini = findViewById(R.id.song_title);
         songtitlemini.setSelected(true);
-
+        album_art = findViewById(R.id.album_art);
+        mini_album_art = findViewById(R.id.mini_album_art);
         listView = findViewById(R.id.lv);
         drawerpull = findViewById(R.id.drawerpull);
+        nowPlaying = findViewById(R.id.NowPlaying);
         seekBar = findViewById(R.id.seekbar);
-        seekBar.getProgressDrawable().setColorFilter(getResources().getColor(android.R.color.holo_blue_light), PorterDuff.Mode.MULTIPLY);
-        seekBar.getThumb().setColorFilter(getResources().getColor(android.R.color.holo_blue_light),PorterDuff.Mode.SRC_IN);
+//        seekBar.getProgressDrawable().setColorFilter(getResources().getColor(android.R.color.holo_blue_light), PorterDuff.Mode.MULTIPLY);
+//        seekBar.getThumb().setColorFilter(getResources().getColor(android.R.color.holo_blue_light),PorterDuff.Mode.SRC_IN);
 
 
         decorView = getWindow().getDecorView();
@@ -128,6 +140,37 @@ public class MainActivity extends AppCompatActivity {
           myMediaPlayer.stop();
           myMediaPlayer.release();
       }
+
+
+
+
+
+
+
+    }
+
+    private void recyclerViewFunc() {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+
+        final ArrayList<ItemHelper> groups = new ArrayList<>();
+        groups.add(new ItemHelper("All Songs"));
+        groups.add(new ItemHelper("Artists"));
+        groups.add(new ItemHelper("Albums"));
+        groups.add(new ItemHelper("Playlists"));
+        groups.add(new ItemHelper("Genres"));
+        groups.add(new ItemHelper("Spotify"));
+
+        adapter = new RecyclerAdapter(getApplicationContext(),groups);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onItemClick(int position, View itemView) {
+                Toast.makeText(getApplicationContext(),"" + groups.get(position).getSong_title(),Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -193,8 +236,21 @@ public class MainActivity extends AppCompatActivity {
         Music = new String[mySongs.size()];
        final ArrayList<ItemHelper> list = new ArrayList<>();
         for(int i = 0; i< mySongs.size(); i++){
+
             Music[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav","");
-            ItemHelper item = new ItemHelper(Music[i]);
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(mySongs.get(i).getPath());
+            byte [] data = mmr.getEmbeddedPicture();
+            Bitmap bitmap = null;
+            if(data != null){
+                bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
+
+            }
+            ItemHelper item = new ItemHelper(Music[i],bitmap);
+
+
+
+
             list.add(item);
 
         }
@@ -204,10 +260,11 @@ public class MainActivity extends AppCompatActivity {
       listView.setAdapter(adapter);
 
       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          @SuppressLint("ResourceAsColor")
           @Override
           public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
               pos = position;
-              ItemHelper lists = list.get(position);
+              final ItemHelper lists = list.get(position);
 
               Uri u = Uri.parse(mySongs.get(position).toString());
               if(myMediaPlayer!=null){
@@ -220,10 +277,19 @@ public class MainActivity extends AppCompatActivity {
               myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
               myMediaPlayer.start();
 
+              if(lists.getBitmap()!=null){
+                  album_art.setImageBitmap(lists.getBitmap());
+                  mini_album_art.setImageBitmap(list.get(pos).getBitmap());
+              }
+              else{
+                  album_art.setImageResource(R.drawable.red);
+                  mini_album_art.setImageResource(R.drawable.red);
+              }
+
               songtitle.setText(mySongs.get(position).getName());
               songtitlemini.setText(mySongs.get(position).getName());
-              play_btn.setBackgroundResource(R.mipmap.ic_pause);
-              play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+              play_btn.setBackgroundResource(R.drawable.pause_white);
+              play_btn_mini.setBackgroundResource(R.drawable.pause_circle);
               int Duration = myMediaPlayer.getDuration()/1000;
               seekBar.setProgress(myMediaPlayer.getCurrentPosition());
               seekBar.setMax(myMediaPlayer.getDuration());
@@ -237,13 +303,10 @@ public class MainActivity extends AppCompatActivity {
                       if(myMediaPlayer.isPlaying()){
                           Log.i("paused", "here");
                           myMediaPlayer.pause();
-//                          cur_time.setText("0:00");
-//                          play_btn.setBackgroundResource(R.mipmap.ic_play);
-//                          play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
                       }
                       cur_time.setText("0:00");
-                      play_btn.setBackgroundResource(R.mipmap.ic_play);
-                      play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                      play_btn.setBackgroundResource(R.drawable.play_white);
+                      play_btn_mini.setBackgroundResource(R.drawable.play_circle);
                       Log.i("restarted", "here");
                   }
               });
@@ -280,13 +343,13 @@ public class MainActivity extends AppCompatActivity {
                   public void onClick(View v) {
 //                      seekBar.setMax(myMediaPlayer.getDuration());
                         if(myMediaPlayer.isPlaying()){
-                            play_btn.setBackgroundResource(R.mipmap.ic_play);
-                            play_btn_mini.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp);
+                            play_btn.setBackgroundResource(R.drawable.play_white);
+                            play_btn_mini.setBackgroundResource(R.drawable.play_circle);
                             myMediaPlayer.pause();
                         }
                         else{
-                            play_btn.setBackgroundResource(R.mipmap.ic_pause);
-                            play_btn_mini.setBackgroundResource(R.drawable.ic_pause_black_24dp);
+                            play_btn.setBackgroundResource(R.drawable.pause_white);
+                            play_btn_mini.setBackgroundResource(R.drawable.pause_circle);
                             myMediaPlayer.start();
                             updateSeekBar();
                         }
@@ -309,6 +372,14 @@ public class MainActivity extends AppCompatActivity {
                       Toast.makeText(getApplicationContext(),""+ pos, Toast.LENGTH_SHORT).show();
                       pos = ((pos+1) % mySongs.size());
                       Uri u = Uri.parse(mySongs.get(pos).toString());
+                      if(list.get(pos).getBitmap()!=null){
+                          album_art.setImageBitmap(list.get(pos).getBitmap());
+                          mini_album_art.setImageBitmap(list.get(pos).getBitmap());
+                      }
+                      else{
+                          album_art.setImageResource(R.drawable.red);
+                          mini_album_art.setImageResource(R.drawable.red);
+                      }
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
                       seekBar.setMax(myMediaPlayer.getDuration());
@@ -333,6 +404,14 @@ public class MainActivity extends AppCompatActivity {
                       else{ pos = mySongs.size() - 1; }
 
                       Uri u = Uri.parse(mySongs.get(pos).toString());
+                      if(list.get(pos).getBitmap()!=null){
+                          album_art.setImageBitmap(list.get(pos).getBitmap());
+                          mini_album_art.setImageBitmap(list.get(pos).getBitmap());
+                      }
+                      else{
+                          album_art.setImageResource(R.drawable.red);
+                          mini_album_art.setImageResource(R.drawable.red);
+                      }
                       myMediaPlayer = MediaPlayer.create(getApplicationContext(),u);
                       myMediaPlayer.start();
                       seekBar.setMax(myMediaPlayer.getDuration());
@@ -362,21 +441,28 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                Animation aniFadeOut = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_out);
+                Animation aniFadeIn = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
                 switch (newState)
                 {
                     case BottomSheetBehavior.STATE_EXPANDED:
 
-                    Animation aniFade = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_out);
-                    drawerpull.startAnimation(aniFade);
-                    drawerpull.setVisibility(View.INVISIBLE);
+
+                    drawerpull.startAnimation(aniFadeOut);
+                    nowPlaying.startAnimation(aniFadeIn);
+                    drawerpull.setVisibility(View.GONE);
+                    nowPlaying.setVisibility(View.VISIBLE);
+
                     break;
 
                     case BottomSheetBehavior.STATE_COLLAPSED:
 
-                        Animation aniFad = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fade_in);
-                        drawerpull.startAnimation(aniFad);
+                        drawerpull.startAnimation(aniFadeIn);
+                        nowPlaying.startAnimation(aniFadeOut);
+                        nowPlaying.setVisibility(View.GONE);
                         drawerpull.setVisibility(View.VISIBLE);
                     break;
+
 
                 }
             }

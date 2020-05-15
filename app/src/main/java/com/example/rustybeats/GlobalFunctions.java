@@ -1,4 +1,4 @@
-package com.example.redhawkmusicplayer;
+package com.example.rustybeats;
 
 import android.view.View;
 
