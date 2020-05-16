@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -58,14 +59,15 @@ public class MainActivity extends AppCompatActivity {
     private CircularSeekBar seekBar2;
     static MediaPlayer myMediaPlayer;
     int pos;
-    private Runnable runnable;
-    private Handler handler;
+    private Runnable runnable,runnable2;
+    private Handler handler,handler2;
     GlobalFunctions uiBars = new GlobalFunctions();
     private View decorView;
     RecyclerView recyclerView;
     RecyclerAdapter adapter;
-
-
+    private String[] allPaths;
+    private File storage;
+    TinyDB tinydb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         handler = new Handler();
-
+        handler2 = new Handler();
 
         songtitle = findViewById(R.id.song_name);
         songtitle.setSelected(true);
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         nowPlaying = findViewById(R.id.NowPlaying);
         seekBar = findViewById(R.id.seekbar);
         seekBar2 = findViewById(R.id.circularSeekBar1);
-
+        tinydb = new TinyDB(this);
 
         decorView = getWindow().getDecorView();
         decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
@@ -123,9 +125,15 @@ public class MainActivity extends AppCompatActivity {
               .withListener(new PermissionListener() {
                   @Override
                   public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                        display();
-                  }
+                      Log.i("message", "hello");
+                      runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              display();
+                          }
+                      });
 
+                  }
                   @Override
                   public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
 
@@ -143,11 +151,15 @@ public class MainActivity extends AppCompatActivity {
       }
 
 
+    }
 
 
-
-
-
+    protected void onDestroy(){
+        super.onDestroy();
+        if(myMediaPlayer!=null){
+            myMediaPlayer.stop();
+            myMediaPlayer.release();
+        }
     }
 
     private void recyclerViewFunc() {
@@ -174,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
 
     private void updateSeekBar(){
         seekBar.setProgress((myMediaPlayer.getCurrentPosition()));
@@ -205,56 +216,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    void display(){
+        final ArrayList<File> mySongs;
 
+        allPaths = StorageUtil.getStorageDirectories(this);
 
-  public ArrayList<File> findSong(File file){
-        ArrayList<File> arrayList = new ArrayList<>();
-
-        File[] files = file.listFiles();
-        if(files!=null){
-            for(File singleFile:files){
-                if(singleFile.isDirectory() && !singleFile.isHidden()){
-                    arrayList.addAll(findSong(singleFile));
-                }
-                else{
-                    if(singleFile.getName().endsWith(".mp3") || singleFile.getName().endsWith(".wav")){
-                        arrayList.add(singleFile);
-                    }
-                }
-            }
+        for(String path : allPaths){
+            storage = new File(path);
+            Method.load_Directory_Files(storage);
         }
 
-        return arrayList;
-
-  }
-
-
-
-  void display(){
-
-        final ArrayList<File> mySongs = findSong(Environment.getExternalStorageDirectory());
-
+        mySongs = Constant.allMediaList;
 
         Music = new String[mySongs.size()];
        final ArrayList<ItemHelper> list = new ArrayList<>();
         for(int i = 0; i< mySongs.size(); i++){
-
-            Music[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav","");
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(mySongs.get(i).getPath());
-            byte [] data = mmr.getEmbeddedPicture();
+            Music[i] = mySongs.get(i).getName().toString().replace(".mp3", "").replace(".wav","").replace(".ogg","").replace(".m4a","");
             Bitmap bitmap = null;
-            if(data != null){
-                bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
-
-            }
-            ItemHelper item = new ItemHelper(Music[i],bitmap);
-
-
-
-
+            ItemHelper item = new ItemHelper(Music[i],mySongs.get(i));
             list.add(item);
-
         }
 
       ArrAdapter adapter = new ArrAdapter(getApplicationContext(),R.layout.listitem,list);
@@ -493,4 +473,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
 }
+
+
+
