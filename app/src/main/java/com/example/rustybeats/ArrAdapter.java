@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ArrAdapter extends ArrayAdapter<ItemHelper>{
@@ -31,25 +32,54 @@ public class ArrAdapter extends ArrayAdapter<ItemHelper>{
 
    @SuppressLint("WrongConstant")
    public View getView(int position, View convertView, ViewGroup parent){
+
         String song_title = getItem(position).getSong_title();
-        Bitmap bitmap = getItem(position).getBitmap();
+//        Bitmap bitmap = getItem(position).getBitmap();
+        File file = getItem(position).getFile();
+        ItemHelper item = getItem(position);
 
-       LayoutInflater inflater = LayoutInflater.from(mContext);
-       convertView = inflater.inflate(mResource,parent,false);
 
-       TextView song = (TextView) convertView.findViewById(R.id.song_title);
-       TextView album = (TextView) convertView.findViewById(R.id.album_name);
-       ImageView image = (ImageView) convertView.findViewById(R.id.coverArt);
-       if(bitmap != null){
-           image.setImageBitmap(bitmap);
-       }
 
-       song.setText(song_title);
-       song.setTypeface(tf);
-       album.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/poppins_medium.ttf"));
 
-       return convertView;
+        View row = convertView;
+        MusicViewHolder holder = null;
+
+        if(row == null){
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            row = inflater.inflate(mResource,parent,false);
+            holder = new MusicViewHolder(row);
+            row.setTag(holder);
+        }
+        else{
+                holder = (MusicViewHolder) row.getTag();
+        }
+
+            BitmapWorkerTask bwt = new BitmapWorkerTask(holder.image,item);
+            bwt.execute(file);
+
+
+       holder.song.setText(song_title);
+       holder.song.setTypeface(tf);
+       holder.album.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fonts/poppins_medium.ttf"));
+
+       return row;
 
    }
+
+
+   class MusicViewHolder{
+        ImageView image;
+        TextView song,album;
+
+        MusicViewHolder(View v){
+            song = (TextView) v.findViewById(R.id.song_title);
+            album = (TextView) v.findViewById(R.id.album_name);
+            image = (ImageView) v.findViewById(R.id.coverArt);
+        }
+
+   }
+
+
+
 
 }

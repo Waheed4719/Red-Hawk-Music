@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -126,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
                   @Override
                   public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
                       Log.i("message", "hello");
-                      runOnUiThread(new Runnable() {
+
+                      handler2.post(new Runnable() {
                           @Override
                           public void run() {
                               display();
@@ -237,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
             list.add(item);
         }
 
+
       ArrAdapter adapter = new ArrAdapter(getApplicationContext(),R.layout.listitem,list);
 
       listView.setAdapter(adapter);
@@ -297,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                   }
               });
 
-              //Updates Seekbar while music plays
+              //Updates seekbar while music plays
                 updateSeekBar();
 
               seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -327,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
               play_btn.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(View v) {
-//                      seekBar.setMax(myMediaPlayer.getDuration());
                         if(myMediaPlayer.isPlaying()){
                             play_btn.setBackgroundResource(R.drawable.play_white);
                             play_btn_mini.setBackgroundResource(R.drawable.play_circle);
@@ -471,6 +473,19 @@ public class MainActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(uiBars.hideSystemBars());
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

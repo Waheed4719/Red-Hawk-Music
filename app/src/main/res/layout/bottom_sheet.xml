@@ -201,7 +201,7 @@
                 app:pointer_alpha_ontouch="100"
                 app:pointer_color="#0174DF"
                 app:pointer_halo_color="#880174DF"
-                app:progress="25"
+                app:progress="0"
                 app:start_angle="270"
                 app:use_custom_radii="true" />
 

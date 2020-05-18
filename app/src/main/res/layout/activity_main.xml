@@ -54,7 +54,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/music_groups"
             android:background="#36363E"
-            android:paddingHorizontal="15dp"
 
             />
 
